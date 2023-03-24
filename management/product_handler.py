@@ -16,7 +16,7 @@ def get_products_by_type(kind: str) -> list:
 
 
 def add_product(menu: list[dict], **kwargs) -> dict:
-    curr_id = menu[len(menu)-1]["_id"] + 1 if len(menu) else 1
+    curr_id = menu[-1]["_id"] + 1 if len(menu) else 1
     kwargs["_id"] = curr_id
     menu.append(kwargs)
     return kwargs
@@ -35,4 +35,20 @@ def menu_report():
             many_by_type = len(products_filter)
             most_common_type = curr_type
     return f"Products Count: {product_count} - Average Price: ${average_price} - Most Common Type: {most_common_type}"
+
+
+def add_product_extra(menu: list[dict], *args, **kwargs):
+    keys_required = set(args)
+    keys_send = set(kwargs.keys())
+    if keys_required != keys_send:
+        keys_difference = keys_required.symmetric_difference(keys_send)
+        if keys_required & keys_difference:
+            raise KeyError(f'field {str(*keys_difference)} is required')
+        else:
+            for key in keys_difference:
+                del kwargs[key]
+    curr_id = menu[-1]["_id"] + 1 if len(menu) else 1
+    kwargs["_id"] = curr_id
+    menu.append(kwargs)
+    return kwargs
 
